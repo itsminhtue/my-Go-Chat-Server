@@ -16,5 +16,4 @@ func GetEnv(key string, fallback string) string {
 	}
 	return fallback
 
-	
 }
