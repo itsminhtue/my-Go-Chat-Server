@@ -2,7 +2,10 @@ package main
 
 import (
 	"fmt"
+	"goChat/internal/common/auth"
 	"goChat/internal/common/config"
+	"goChat/internal/common/db"
+	"goChat/internal/user"
 	"log"
 	"net/http"
 )
@@ -10,6 +13,18 @@ import (
 func main() {
 	config.LoadEnv()
 
+	database := db.InitMongo()
+
+	// Logic connect mongoDB
+	userRepo := user.NewRepository(database)
+
+	// Tạo HTTP cho api
+	userHandler := user.NewHandler(userRepo)
+
+	authHandler := auth.NewHandler(userRepo)
+
+	http.HandleFunc("/api/login", authHandler.Login)
+	http.HandleFunc("/api/register", userHandler.Register)
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintln(w, "Welcome to My Go Chat Server Version 0.0.1")
 	})
